@@ -6,15 +6,26 @@ function limparCampo(tag) {
 function exibirNaTela(tag, texto) {
     let campo = document.querySelector(tag);
     campo.innerHTML = texto;
+    responsiveVoice.speak(texto, 'Brazilian Portuguese Female', {rate:1.2});
 }
 
-function exibirMensagemInicial(params) {
+function exibirMensagemInicial() {
     exibirNaTela('h1', `Jogo do Número Secreto`);
     exibirNaTela('p', `Escolha um número entre 1 e 10.`);
 }
 
 function gerarNumeroAleatorio() {
-    return parseInt(Math.random() * 10 + 1);
+    let numeroEscolhido = parseInt(Math.random() * numeroLimite + 1);
+    let quantidadeDeElementosNaLista = listaDeNumerosSorteados.length;
+    if (quantidadeDeElementosNaLista = numeroLimite) {
+        listaDeNumerosSorteados = [];
+    }
+    if (listaDeNumerosSorteados.includes(numeroEscolhido)) {
+        return gerarNumeroAleatorio();
+    } else {
+        listaDeNumerosSorteados.push(numeroEscolhido);
+        return numeroEscolhido;
+    }
 }
 
 function reiniciarJogo() {
@@ -25,11 +36,6 @@ function reiniciarJogo() {
     document.querySelector('#reiniciar').setAttribute('disabled', true);
 }
 
-exibirMensagemInicial();
-let numeroSecreto = gerarNumeroAleatorio();
-let tentativas = 1;
-limparCampo('.container__input');
-
 function verificarChute() {
     let chute = document.querySelector('.container__input').value;
     if (chute == numeroSecreto) {
@@ -38,12 +44,19 @@ function verificarChute() {
         exibirNaTela('p', `Você descobriu o numero secreto com ${tentativas} ${palavraTentativa}!`);
         document.querySelector('#reiniciar').removeAttribute('disabled');
     } else {
-        tentativas++;
         if (chute > numeroSecreto) {
             exibirNaTela('p', `O numero secreto é menor!`);
         } else {
             exibirNaTela('p', `O numero secreto é maior!`);
         }
         limparCampo('.container__input');
+        tentativas++;
     }
 }
+
+exibirMensagemInicial();
+let listaDeNumerosSorteados = [];
+let numeroLimite = 10;
+let numeroSecreto = gerarNumeroAleatorio();
+let tentativas = 1;
+limparCampo('.container__input');
